@@ -5,18 +5,24 @@ using namespace std;
 class cmplx{
 private:
     double re,im; //z=re+j*im
-
-
+    static int z_count; //informa qtos numeros complexos foram criados
+    int z_num;
 public:
-    ~cmplx(){cout<<"DESTRUIDO"<<endl;};
-    cmplx(){};
+    ~cmplx(){z_count--;};
+    cmplx(){z_count++;z_num=z_count;};
     cmplx(double a,double b) : re(a), im(b) {};
     double Re(){return re;}; //retorna Re
     double Im(); //retorna Im
     cmplx& recebe_Re (double a);
     cmplx& recebe_Im (double b);
+    int num()(return z_num);
+    static int cmplx_count (return z_count);
 
-    static int z_count; //informa qtos numeros complexos foram criados
+
+    //cmplx(cmplx&); //construtor de copia
+    //cmplx(cmplx&&); //construtor de remocao
+
+
 };
 
 double cmplx::Im(){
@@ -56,9 +62,9 @@ cmplx operator-(cmplx& z){
 }
 
 cmplx operator*(cmplx& z1, cmplx&& z2){
-    cmplx  resutado;
-    resutado.recebe_Re(z1.Re()*z2.Re()-z1.Im()*z2.Im());
-    resutado.recebe_Im(z1.Re()*z2.Re()+z1.Im()*z2.Im());
+    cmplx  resultado;
+    resultado.recebe_Re(z1.Re()*z2.Re()-z1.Im()*z2.Im());
+    resultado.recebe_Im(z1.Re()*z2.Re()+z1.Im()*z2.Im());
     return resultado;
 }
 
@@ -70,6 +76,7 @@ return impressao;
 
 int main()
 {
+
     cmplx z, z2(3.0,4.0),z3(6,8); //z complexo
     z=-z3;
     cout<<"Z: "<<z<<std::endl;
