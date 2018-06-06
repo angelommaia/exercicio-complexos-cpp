@@ -1,87 +1,104 @@
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
-class cmplx{
+class cmplx {
 private:
-    double re,im; //z=re+j*im
-    static int z_count; //informa qtos numeros complexos foram criados
+    double re, im; //z=re+j*im
+    static int z_count; //static n pode ser iniciado dentro da classe //informa qtos numeros complexos foram criados
     int z_num;
+
 public:
-    ~cmplx(){z_count--;};
-    cmplx(){z_count++;z_num=z_count;};
-    cmplx(double a,double b) : re(a), im(b) {};
-    double Re(){return re;}; //retorna Re
-    double Im(); //retorna Im
-    cmplx& recebe_Re (double a);
-    cmplx& recebe_Im (double b);
-    int num()(return z_num);
-    static int cmplx_count (return z_count);
+    ~cmplx(){z_count--;}; //destrutor
 
+    cmplx(double a, double b): re(a), im{b}{}; //ao selecionar o c++11, podemos iniciar o objeto im como im{b} ao invés de im(b)
+    cmplx(){cmplx(0.0,0.0);z_count++;z_num=z_count;}; //construtor padrão, inicia o numero como 0+0j e faz a contagem de qtos z foram criados
+    cmplx(double a){cmplx(a,0.0);}; //construtor para numero real, chamado ao iniciar z(re)
 
-    //cmplx(cmplx&); //construtor de copia
-    //cmplx(cmplx&&); //construtor de remocao
+    cmplx& recebe_Re(double a); //atribuicao de valor para a parte real
+    cmplx& recebe_Im(double b); //atribuicao de valor para a parte imaginaria
 
+    int num(){return z_num;};
+    static int cmplx_count (){return z_count;};
+
+    double Re(){return re;}; //retorna a parte real
+    double Im();
 
 };
+    int cmplx::z_count=0; //inicializacao da var static deve ser feita FORA da classe
+    double cmplx::Im(){return im;}; //retorna a parte imaginaria
 
-double cmplx::Im(){
-return im;
-};
+    cmplx& cmplx::recebe_Re(double a){re=a; return *this;}  //atribuicao de valor
+    cmplx& cmplx::recebe_Im(double b){im=b; return *this;}
 
-cmplx& cmplx::recebe_Re(double a){
-re=a;
-return *this;
-}
+    cmplx operator+(cmplx& z1, cmplx& z2){
 
+        cmplx soma;
 
-cmplx& cmplx::recebe_Im(double b){
-im=b;
-return *this;
-}
+        soma.recebe_Re(z1.Re()+z2.Re());
+        soma.recebe_Im(z1.Im()+z2.Im());
+        return soma;
+    }
 
-cmplx operator+(cmplx& z1, cmplx& z2){
-    cmplx  soma;
-    soma.recebe_Re(z1.Re()+z2.Re());
-    soma.recebe_Im(z1.Im()+z2.Im());
-    return soma;
-}
+    cmplx operator- (cmplx& z1, cmplx& z2){
 
-cmplx operator-(cmplx& z1, cmplx& z2){
-    cmplx  dif;
-    dif.recebe_Re(z1.Re()-z2.Re());
-    dif.recebe_Im(z1.Im()-z2.Im());
-    return dif;
-}
+        cmplx diff;
 
-cmplx operator-(cmplx& z){
-    cmplx oposto;
-    oposto.recebe_Re(-z.Re());
-    oposto.recebe_Im(-z.Im());
-    return oposto;
-}
+        diff.recebe_Re(z1.Re()-z2.Re());
+        diff.recebe_Im(z1.Im()-z2.Im());
 
-cmplx operator*(cmplx& z1, cmplx&& z2){
-    cmplx  resultado;
-    resultado.recebe_Re(z1.Re()*z2.Re()-z1.Im()*z2.Im());
-    resultado.recebe_Im(z1.Re()*z2.Re()+z1.Im()*z2.Im());
-    return resultado;
-}
+        return diff;
+    }
+    cmplx operator-(cmplx& z){
 
-ostream& operator<<(ostream& impressao,cmplx& z){
-    if(z.Im()<0.0){impressao<<z.Re()<<"-j"<<(-1*z.Im());}
-    else{impressao<<z.Re()<<"+j"<<z.Im();}
-return impressao;
-}
+        cmplx oposto;
 
+        oposto.recebe_Re(-z.Re());
+        oposto.recebe_Im(-z.Im());
+
+        return oposto;
+    }
+    cmplx operator*(cmplx& z1, cmplx&& z2){
+
+        cmplx  resultado;
+
+        resultado.recebe_Re(z1.Re()*z2.Re()-z1.Im()*z2.Im());
+        resultado.recebe_Im(z1.Re()*z2.Re()+z1.Im()*z2.Im());
+
+        return resultado;
+    }
+
+    cmplx operator/(cmplx& z1, cmplx& z2){
+
+        cmplx razao;
+
+        razao.recebe_Re(((z1.Re()*z2.Re()+z1.Im()*z2.Im())/(z2.Re()*z2.Re()+z2.Im()*z2.Im())));
+        razao.recebe_Im(((z2.Re()*z1.Im()-z1.Re()*z2.Im())/(z2.Re()*z2.Re()+z2.Im()*z2.Im())));
+
+        return razao;
+    }
+
+    std::ostream& operator<<(std::ostream& impressao,cmplx& z){
+
+        if(z.Im()<0.0){impressao<<z.Re()<<"-j"<<(-1*z.Im());}
+        else{impressao<<z.Re()<<"+j"<<z.Im();}
+
+        return impressao;
+    }
 int main()
 {
+    int a;
+    cmplx z,z1(2,0), z2(-1,1);
+    z=z1/z2;
 
-    cmplx z, z2(3.0,4.0),z3(6,8); //z complexo
-    z=-z3;
-    cout<<"Z: "<<z<<std::endl;
-    cout<<"Z1: "<<z2<<endl;
-    cout<<"Z2: "<<z3<<endl;
-
+    printf("Numeros complexos\n");
+    printf("z1: ");
+    std::cout<<z1<<std::endl;
+    printf("z2: ");
+    std::cout<<z2<<std::endl;
+    printf("z1/z2: ");
+    std::cout <<z<< std::endl;
+    //a=cmplx::num();
+    //printf("z_num: %d", a);
     return 0;
 }
